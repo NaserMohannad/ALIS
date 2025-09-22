@@ -12,8 +12,8 @@ def connect_to_db():
         "X-Cohere-Api-Key": st.secrets["COHERE_API_KEY"]
     }
 
-    weaviate_url = st.secrets["WEAVIATE_URL"]
-    weaviate_api_key = st.secrets["WEAVIATE_API_KEY"]
+    weaviate_url = st.secrets["veaviat_rest"]
+    weaviate_api_key = st.secrets["weaviat_api_key"]
 
     client = weaviate.connect_to_weaviate_cloud(
         cluster_url=weaviate_url,
@@ -72,7 +72,7 @@ def llm_response(query, docs, mode="faq"):
     for i in docs:
         chunks.append(i.properties["content"] if mode=="faq" else i.properties["text"])
 
-    API_KEY = st.secrets["PERPLEXITY_API_KEY"]
+    API_KEY = st.secrets["perplixty_api"]
     ENDPOINT = "https://api.perplexity.ai/chat/completions"
 
     system_prompt = """
@@ -127,4 +127,5 @@ if st.button("إرسال"):
             client.close()
         st.success("✅ تم الحصول على الإجابة:")
         st.write(answer)
+
 
