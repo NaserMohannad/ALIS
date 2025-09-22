@@ -132,7 +132,6 @@ if st.button("إرسال"):
 import streamlit as st
 from PIL import Image
 
-from your_module import connect_to_db, IntelligentRAGSystem  # غيّر حسب كودك
 
 # إعداد الصفحة
 st.set_page_config(page_title="Jordan RAG Assistant 🇯🇴", layout="wide")
@@ -180,6 +179,7 @@ st.markdown(
     "<div style='text-align: center; color: gray;'>تم تطوير النظام بواسطة مشروع <strong>AILS</strong> - الذكاء الاصطناعي للأراضي والمساحة 🇯🇴</div>",
     unsafe_allow_html=True
 )
+
 
 
 
