@@ -4,6 +4,7 @@ import weaviate
 from transformers import AutoTokenizer, pipeline
 from weaviate.classes.init import Auth
 from weaviate.classes.query import Rerank
+import torch
 
 
 def connect_to_db():
@@ -126,3 +127,4 @@ if st.button("إرسال"):
             client.close()
         st.success("✅ تم الحصول على الإجابة:")
         st.write(answer)
+
