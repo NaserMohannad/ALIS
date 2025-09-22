@@ -111,7 +111,7 @@ def IntelligentRAGSystem(query, client):
         return llm_response(query, law_docs, mode="law")
 
 
-st.set_page_config(page_title="Jordan RAG Assistant 🇯🇴", layout="wide")
+'''st.set_page_config(page_title="Jordan RAG Assistant 🇯🇴", layout="wide")
 st.title("🤖 Jordan RAG Assistant")
 st.write("أدخل سؤالك المتعلق بالأراضي والتشريعات:")
 
@@ -127,5 +127,59 @@ if st.button("إرسال"):
             client.close()
         st.success("✅ تم الحصول على الإجابة:")
         st.write(answer)
+'''
+
+import streamlit as st
+from PIL import Image
+
+from your_module import connect_to_db, IntelligentRAGSystem  # غيّر حسب كودك
+
+# إعداد الصفحة
+st.set_page_config(page_title="Jordan RAG Assistant 🇯🇴", layout="wide")
+
+# ===== الشعار =====
+col1, col2 = st.columns([1, 5])
+with col1:
+    st.image("https://upload.wikimedia.org/wikipedia/commons/8/89/Scale_of_justice.png", width=80)  # شعار قانون/ميزان
+
+with col2:
+    st.markdown("<h1 style='margin-bottom: 0;'>🤖 AILS - Jordan RAG Assistant</h1>", unsafe_allow_html=True)
+    st.markdown("<small style='color: gray;'>نظام ذكي للإجابة على الأسئلة المتعلقة بالأراضي والتشريعات الأردنية</small>", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ===== الإدخال =====
+st.markdown("### ✍️ أدخل سؤالك:")
+query = st.text_area(
+    "📝 اكتب سؤالك هنا:",
+    height=120,
+    placeholder="مثال: ما هي رسوم تسجيل قطعة أرض؟"
+)
+
+# ===== زر الإرسال =====
+send = st.button("🚀 إرسال السؤال")
+
+# ===== المعالجة =====
+if send:
+    if not query.strip():
+        st.warning("⚠ الرجاء إدخال سؤال.")
+    else:
+        with st.spinner("🔍 جاري المعالجة، الرجاء الانتظار..."):
+            try:
+                client = connect_to_db()
+                answer = IntelligentRAGSystem(query, client)
+                client.close()
+                st.success("✅ تم الحصول على الإجابة:")
+                st.markdown(f"""<div style='background-color:#f0f2f6; padding:15px; border-radius:10px; direction:rtl;'>{answer}</div>""", unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"حدث خطأ أثناء الإجابة: {e}")
+
+# ===== تذييل الصفحة =====
+st.markdown("---")
+st.markdown(
+    "<div style='text-align: center; color: gray;'>تم تطوير النظام بواسطة مشروع <strong>AILS</strong> - الذكاء الاصطناعي للأراضي والمساحة 🇯🇴</div>",
+    unsafe_allow_html=True
+)
+
 
 
