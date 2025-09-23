@@ -78,11 +78,12 @@ def llm_response(query, docs, mode="faq"):
     ENDPOINT = "https://api.perplexity.ai/chat/completions"
 
     system_prompt = """
-    أنت مساعد ذكي متخصص في مسائل الأراضي والمساحة في الأردن.
-    أجب فقط من السياق المقدم. إذا لم تجد إجابة ذات صلة، أجب بالعربية: "لا أعلم الجواب".
-    كن دقيقاً ومختصراً وركز على الإجابات العربية.
-    لا تقدم أي روابط أو مراجع خارجية في إجابتك.
-    تخصص فقط في المساعدة بشأن الأراضي والمساحة وليس الاستشارة القانونية العامة.
+    You are an intelligent assistant specialized in land and cadastral matters in Jordan.  
+Answer **only** from the provided context.  
+If you do not find a relevant answer, reply in Arabic with exactly: "لا أعلم الجواب، غالباً لا يتعلق سؤالك بمجالي".  
+Be precise, concise, and respond strictly in Arabic.  
+Do not provide any external links or references.  
+Focus solely on land and cadastral issues in Jordan, not general legal consultation.
     """
 
     messages = [
@@ -117,7 +118,7 @@ def IntelligentRAGSystem(query, client):
 
 # ===== إعداد الصفحة =====
 st.set_page_config(
-    page_title="ALIS - مساعد الأراضي والمساحة الأردني", 
+    page_title="AILS - مساعد الأراضي والمساحة الأردني", 
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -451,7 +452,7 @@ def update_query(new_query):
 # Header
 st.markdown("""
     <div class="main-header">
-        <div class="main-title">ALIS - مساعد الأراضي والمساحة الأردني</div>
+        <div class="main-title">AILS - مساعد الأراضي والمساحة الأردني</div>
         <div class="main-subtitle">نظام ذكي متقدم متخصص في المساعدة بشؤون الأراضي والمساحة في الأردن</div>
     </div>
 """, unsafe_allow_html=True)
@@ -459,13 +460,13 @@ st.markdown("""
 # Welcome Section
 st.markdown("""
     <div class="welcome-card">
-        <h3>مرحباً بك في ALIS</h3>
+        <h3>مرحباً بك في AILS</h3>
         <p>مساعدك الذكي المتخصص في مسائل الأراضي والمساحة في الأردن. نحن متخصصون فقط في المساعدة بالأراضي والمساحة وليس الاستشارة القانونية أو التشريعات بشكل عام. احصل على إجابات دقيقة وموثوقة لجميع استفساراتك مع ضمان الخصوصية والأمان التام.</p>
     </div>
 """, unsafe_allow_html=True)
 
 # Features Section
-st.markdown("## لماذا ALIS؟")
+st.markdown("## لماذا AILS؟")
 features_html = """
     <div class="features-grid">
         <div class="feature-card">
@@ -564,5 +565,6 @@ st.markdown("""
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
+
 
 
