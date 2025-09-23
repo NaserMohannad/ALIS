@@ -28,4 +28,4 @@ The project aims to assist Jordanian citizens by answering their questions about
 
 📊 Data Source
 
-The knowledge base was built using data extracted from the Legislations section of the official website of the Department of Land and Survey.
+- The knowledge base was built using data extracted from the Legislations section of the official website of the Department of Land and Survey.
