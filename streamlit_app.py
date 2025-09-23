@@ -485,12 +485,6 @@ features_html = """
 st.markdown(features_html, unsafe_allow_html=True)
 
 # Input Section
-st.markdown("""
-    <div class="input-section">
-        <div class="section-title">
-            اطرح سؤالك حول الأراضي والمساحة واحصل على الإجابة الشافية
-        </div>
-""", unsafe_allow_html=True)
 
 # Quick Questions
 st.markdown("### أسئلة شائعة - اختر أحد الأسئلة التالية")
@@ -570,3 +564,4 @@ st.markdown("""
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
+
