@@ -25,3 +25,7 @@ The project aims to assist Jordanian citizens by answering their questions about
 - Demonstrate AI innovation with limited resources.
 
 - Highlight practical applications of retrieval-augmented generation (RAG) techniques.
+
+📊 Data Source
+
+The knowledge base was built using data extracted from the Legislations section of the official website of the Department of Land and Survey.
