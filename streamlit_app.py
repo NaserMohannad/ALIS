@@ -113,12 +113,125 @@ def IntelligentRAGSystem(query, client):
 
 
 import streamlit as st
-from PIL import Image
+import requests
+import weaviate
+from transformers import AutoTokenizer, pipeline
+from weaviate.classes.init import Auth
+from weaviate.classes.query import Rerank
+import torch
 import time
+from PIL import Image
+
+
+def connect_to_db():
+    headers = {
+        "X-Cohere-Api-Key": st.secrets["COHERE_API_KEY"]
+    }
+
+    weaviate_url = st.secrets["veaviat_rest"]
+    weaviate_api_key = st.secrets["weaviat_api_key"]
+
+    client = weaviate.connect_to_weaviate_cloud(
+        cluster_url=weaviate_url,
+        auth_credentials=Auth.api_key(weaviate_api_key),
+        headers=headers
+    )
+    return client
+
+
+@st.cache_resource
+def load_router():
+    model_checkpoint = "EN3IMI/RouterAraBERT"
+    tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
+    classifier = pipeline("sentiment-analysis", model=model_checkpoint)
+    return classifier
+
+classifier = load_router()
+
+
+def search_for_faq(user_query, client):
+    collection = client.collections.use("FAQ")
+    response = collection.query.hybrid(
+        query=user_query,
+        limit=10,
+        alpha=0.40,
+        rerank=Rerank(prop="content", query=user_query),
+    )
+
+    queries = []
+    for idx, obj in enumerate(response.objects[:2]):
+        message_to_router = f"{user_query} [SEP] {obj.properties['content']}"
+        queries.append(message_to_router)
+
+    return queries, response.objects[:3]
+
+def search_for_laws(user_query, client):
+    collection = client.collections.use("Laws")
+    response = collection.query.hybrid(
+        query=user_query,
+        limit=10,
+        alpha=0.40,
+        rerank=Rerank(prop="text", query=user_query),
+    )
+    return response.objects[:3]
+
+
+def router_decision(queries):
+    results = classifier(queries)
+    labels = [res['label'] for res in results]
+    numeric_labels = [1 if label == 'LABEL_1' else 0 for label in labels]
+    return any(numeric_labels)
+
+
+def llm_response(query, docs, mode="faq"):
+    chunks = []
+    for i in docs:
+        chunks.append(i.properties["content"] if mode=="faq" else i.properties["text"])
+
+    API_KEY = st.secrets["perplixty_api"]
+    ENDPOINT = "https://api.perplexity.ai/chat/completions"
+
+    system_prompt = """
+    أنت مساعد ذكي متخصص في مسائل الأراضي والمساحة في الأردن.
+    أجب فقط من السياق المقدم. إذا لم تجد إجابة ذات صلة، أجب بالعربية: "لا أعلم الجواب".
+    كن دقيقاً ومختصراً وركز على الإجابات العربية.
+    لا تقدم أي روابط أو مراجع خارجية في إجابتك.
+    تخصص فقط في المساعدة بشأن الأراضي والمساحة وليس الاستشارة القانونية العامة.
+    """
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": "Context:\n" + "\n".join(chunks) + "\n\nQuestion:\n" + query},
+    ]
+
+    data = {
+        "model": "sonar-pro",
+        "messages": messages,
+        "max_tokens": 300,
+        "temperature": 0.5,
+    }
+
+    resp = requests.post(
+        ENDPOINT,
+        headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"},
+        json=data,
+    )
+    return resp.json()['choices'][0]['message']['content']
+
+
+def IntelligentRAGSystem(query, client):
+    faq_queries, faq_docs = search_for_faq(query, client)
+    decision = router_decision(faq_queries)
+    if decision:
+        return llm_response(query, faq_docs, mode="faq")
+    else:
+        law_docs = search_for_laws(query, client)
+        return llm_response(query, law_docs, mode="law")
+
 
 # ===== إعداد الصفحة =====
 st.set_page_config(
-    page_title="ALIS - مساعد الأراضي والتشريعات الأردني", 
+    page_title="ALIS - مساعد الأراضي والمساحة الأردني", 
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -452,8 +565,8 @@ def update_query(new_query):
 # Header
 st.markdown("""
     <div class="main-header">
-        <div class="main-title">ALIS - مساعد الأراضي والتشريعات الأردني</div>
-        <div class="main-subtitle">نظام ذكي متقدم للإجابة على استفساراتكم القانونية والعقارية بدقة ومهنية عالية</div>
+        <div class="main-title">ALIS - مساعد الأراضي والمساحة الأردني</div>
+        <div class="main-subtitle">نظام ذكي متقدم متخصص في المساعدة بشؤون الأراضي والمساحة في الأردن</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -461,7 +574,7 @@ st.markdown("""
 st.markdown("""
     <div class="welcome-card">
         <h3>مرحباً بك في ALIS</h3>
-        <p>مساعدك الذكي المتخصص في التشريعات الأردنية وقوانين الأراضي. احصل على إجابات دقيقة وموثوقة لجميع استفساراتك القانونية مع ضمان الخصوصية والأمان التام.</p>
+        <p>مساعدك الذكي المتخصص في مسائل الأراضي والمساحة في الأردن. نحن متخصصون فقط في المساعدة بالأراضي والمساحة وليس الاستشارة القانونية أو التشريعات بشكل عام. احصل على إجابات دقيقة وموثوقة لجميع استفساراتك مع ضمان الخصوصية والأمان التام.</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -471,19 +584,19 @@ features_html = """
     <div class="features-grid">
         <div class="feature-card">
             <h4>سرعة استثنائية</h4>
-            <p>إجابات فورية ودقيقة على جميع استفساراتك القانونية خلال ثوانٍ معدودة</p>
+            <p>إجابات فورية ودقيقة على جميع استفساراتك حول الأراضي والمساحة خلال ثوانٍ معدودة</p>
         </div>
         <div class="feature-card">
             <h4>دقة متناهية</h4>
-            <p>معلومات موثقة ومحدثة باستمرار من المصادر القانونية الرسمية</p>
+            <p>معلومات موثقة ومحدثة باستمرار من المصادر المتخصصة في الأراضي والمساحة</p>
         </div>
         <div class="feature-card">
             <h4>أمان وخصوصية</h4>
             <p>حماية كاملة لبياناتك واستفساراتك مع ضمان السرية التامة</p>
         </div>
         <div class="feature-card">
-            <h4>شمولية كاملة</h4>
-            <p>تغطية شاملة لجميع قوانين الأراضي والتشريعات الأردنية</p>
+            <h4>تخصص مركز</h4>
+            <p>تركيز كامل على مسائل الأراضي والمساحة في الأردن فقط</p>
         </div>
     </div>
 """
@@ -493,7 +606,7 @@ st.markdown(features_html, unsafe_allow_html=True)
 st.markdown("""
     <div class="input-section">
         <div class="section-title">
-            اطرح سؤالك واحصل على الإجابة الشافية
+            اطرح سؤالك حول الأراضي والمساحة واحصل على الإجابة الشافية
         </div>
 """, unsafe_allow_html=True)
 
@@ -506,16 +619,16 @@ with col1:
         update_query("ما هي رسوم تسجيل الأراضي في الأردن؟")
 
 with col2:
-    if st.button("شروط البيع", key="q2", use_container_width=True):
-        update_query("ما هي شروط بيع الأراضي؟")
+    if st.button("إجراءات النقل", key="q2", use_container_width=True):
+        update_query("ما هي إجراءات نقل ملكية الأراضي؟")
 
 with col3:
-    if st.button("الإرث", key="q3", use_container_width=True):
-        update_query("كيف يتم توزيع الإرث حسب القانون الأردني؟")
+    if st.button("أنواع الأراضي", key="q3", use_container_width=True):
+        update_query("ما هي أنواع الأراضي في الأردن؟")
 
 with col4:
-    if st.button("التأمين", key="q4", use_container_width=True):
-        update_query("ما هو التأمين العقاري المطلوب؟")
+    if st.button("المساحة والحدود", key="q4", use_container_width=True):
+        update_query("كيف يتم تحديد مساحة وحدود قطعة الأرض؟")
 
 # Text area with current query
 st.markdown("### اكتب سؤالك هنا")
@@ -540,40 +653,20 @@ if send:
         st.warning("الرجاء إدخال سؤال قبل الإرسال")
     else:
         # Loading animation
-        with st.spinner("جاري البحث في قاعدة البيانات القانونية المتخصصة..."):
+        with st.spinner("جاري البحث في قاعدة البيانات المتخصصة..."):
             progress_bar = st.progress(0)
             for i in range(100):
                 time.sleep(0.02)
                 progress_bar.progress(i + 1)
             
             try:
-                # Simulated response - replace with your actual function
-                # client = connect_to_db()
-                # answer = IntelligentRAGSystem(query, client)
-                # client.close()
+                # ربط الباك إند بالفرونت إند
+                client = connect_to_db()
+                answer = IntelligentRAGSystem(query, client)
+                client.close()
                 
-                # Simulated answer for demonstration
-                answer = """
-                بناءً على القوانين الأردنية الحالية والأنظمة النافذة، إليك الإجابة التفصيلية والشاملة:
-
-                **الإجراءات المطلوبة:**
-                1. تحضير الوثائق المطلوبة (سند الملكية الأصلي، هوية مدنية سارية)
-                2. دفع الرسوم المقررة في دائرة الأراضي والمساحة
-                3. الحصول على موافقة البلدية إذا لزم الأمر حسب المنطقة
-                4. إتمام عملية التسجيل النهائي والحصول على سند جديد
-
-                **الرسوم والتكاليف:**
-                - رسم التسجيل: 0.5% من القيمة المقدرة للعقار
-                - رسم الطابع: 15 دينار أردني
-                - رسوم إضافية متغيرة حسب المنطقة والبلدية
-
-                **ملاحظات قانونية هامة:**
-                - يجب أن تكون جميع الوثائق سارية المفعول وغير منتهية الصلاحية
-                - قد تختلف الإجراءات والرسوم حسب نوع الأرض ومنطقتها الجغرافية
-                - يُنصح بمراجعة دائرة الأراضي للتأكد من آخر التحديثات
-                """
-                
-                st.markdown('<div class="success-message">تم الحصول على الإجابة بنجاح من قاعدة البيانات القانونية!</div>', unsafe_allow_html=True)
+                # رسالة النجاح المحدثة (بدون علامة تعجب)
+                st.markdown('<div class="success-message">تم الحصول على الإجابة</div>', unsafe_allow_html=True)
                 
                 st.markdown(f"""
                     <div class="answer-container">
@@ -587,10 +680,10 @@ if send:
 # Footer
 st.markdown("""
     <div class="footer">
-        <h4>ALIS - مساعد الأراضي والتشريعات الأردني</h4>
+        <h4>ALIS - مساعد الأراضي والمساحة الأردني</h4>
         <p>تم تطويره بواسطة فريق ALIS المتخصص | جميع الحقوق محفوظة © 2024</p>
         <p>info@alis.jo | +962-6-1234567 | www.alis.jo</p>
-        <p>نظام ذكي موثوق للاستشارات القانونية - مرخص من وزارة الاقتصاد الرقمي والريادة</p>
+        <p>نظام ذكي متخصص في الأراضي والمساحة - مرخص من وزارة الاقتصاد الرقمي والريادة</p>
     </div>
 """, unsafe_allow_html=True)
 
