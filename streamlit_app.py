@@ -557,11 +557,12 @@ if send:
 st.markdown("""
     <div class="footer">
         <h4>ALIS - مساعد الأراضي والمساحة الأردني</h4>
-        <p>تم تطويره بواسطة: <strong>إياد النعيمي وناصر ديابات</strong> | جميع الحقوق محفوظة © 2024</p>
+        <p>تم تطويره بواسطة: <strong>إياد النعيمي وناصر ديابات</strong> | جميع الحقوق محفوظة © 2025</p>
         <p>📧 diabatnaser7@gmail.com | efalnaimi22@gmail.com</p>
         <p>💼 <a href="https://www.linkedin.com/in/naser-diabat-b857232b9/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Naser Diabat</a> | 
            <a href="https://www.linkedin.com/in/eyad-naimi-1401ba276/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Eyad Al-Naimi</a></p>
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
+
 
