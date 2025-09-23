@@ -118,12 +118,12 @@ import time
 
 # ===== إعداد الصفحة =====
 st.set_page_config(
-    page_title="ALIS - مساعد الأراضي والتشريعات الأردني 🇯🇴", 
+    page_title="ALIS - مساعد الأراضي والتشريعات الأردني", 
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ===== CSS محسن للواجهة الحديثة مع ألوان مدروسة =====
+# ===== CSS محسن للواجهة الحديثة مع ثيم أحمر وأسود =====
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
@@ -140,8 +140,9 @@ st.markdown("""
         }
         
         .stApp {
-            background: linear-gradient(135deg, #fafbfc 0%, #f4f6f8 100%);
+            background: #0a0a0a;
             direction: rtl;
+            color: #ffffff;
         }
         
         .block-container {
@@ -154,49 +155,47 @@ st.markdown("""
         
         /* Header Styling */
         .main-header {
-            background: linear-gradient(135deg, #2d3748, #4a5568);
+            background: linear-gradient(135deg, #8b0000, #000000);
             padding: 3rem 2rem;
             border-radius: 20px;
             text-align: center;
             color: white;
             margin-bottom: 3rem;
-            box-shadow: 0 20px 40px rgba(45, 55, 72, 0.15);
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.3);
+            border: 1px solid #8b0000;
         }
         
         .main-title {
             font-size: 3rem !important;
             font-weight: 700;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
             font-family: 'Cairo', sans-serif;
+            color: #ffffff;
         }
         
         .main-subtitle {
             font-size: 1.3rem;
             opacity: 0.95;
             font-weight: 400;
-            color: #e2e8f0;
+            color: #e0e0e0;
             font-family: 'Cairo', sans-serif;
         }
         
         /* Welcome Card */
         .welcome-card {
-            background: linear-gradient(135deg, #ffffff, #fafbfc);
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
             padding: 3rem 2rem;
             border-radius: 25px;
             text-align: center;
             margin: 3rem 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            border: 1px solid #e8eaed;
-        }
-        
-        .welcome-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.2);
+            border: 1px solid #8b0000;
+            color: #ffffff;
         }
         
         .welcome-card h3 {
-            color: #2d3748;
+            color: #ffffff;
             font-size: 2rem;
             margin-bottom: 1rem;
             font-family: 'Cairo', sans-serif;
@@ -204,7 +203,7 @@ st.markdown("""
         }
         
         .welcome-card p {
-            color: #4a5568;
+            color: #cccccc;
             font-size: 1.2rem;
             line-height: 1.8;
             font-family: 'Cairo', sans-serif;
@@ -212,18 +211,19 @@ st.markdown("""
         
         /* Input Section */
         .input-section {
-            background: linear-gradient(135deg, #ffffff, #fafbfc);
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
             padding: 3rem;
             border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            box-shadow: 0 15px 35px rgba(139, 0, 0, 0.2);
             margin: 3rem 0;
-            border: 1px solid #e8eaed;
+            border: 1px solid #8b0000;
+            color: #ffffff;
         }
         
         .section-title {
             font-size: 2rem;
             font-weight: 600;
-            color: #2d3748;
+            color: #ffffff;
             margin-bottom: 2rem;
             text-align: center;
             font-family: 'Cairo', sans-serif;
@@ -231,61 +231,63 @@ st.markdown("""
         
         /* Answer Box */
         .answer-container {
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            background: linear-gradient(135deg, #2a1a1a, #3a2a2a);
             padding: 3rem;
             border-radius: 25px;
-            border-right: 6px solid #0284c7;
+            border-right: 6px solid #8b0000;
             margin: 3rem 0;
-            box-shadow: 0 15px 35px rgba(2, 132, 199, 0.1);
+            box-shadow: 0 15px 35px rgba(139, 0, 0, 0.3);
+            color: #ffffff;
         }
         
         .answer-text {
             font-size: 1.2rem;
             line-height: 2.2;
-            color: #2d3748;
+            color: #ffffff;
             font-weight: 400;
             font-family: 'Cairo', sans-serif;
         }
         
         /* Buttons */
         .stButton > button {
-            background: linear-gradient(135deg, #4f46e5, #3730a3);
+            background: linear-gradient(135deg, #8b0000, #600000);
             color: white;
             border: none;
             border-radius: 30px;
             padding: 1rem 3rem;
             font-size: 1.2rem;
             font-weight: 600;
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4);
             transition: all 0.3s ease;
             width: 100%;
             font-family: 'Cairo', sans-serif;
         }
         
         .stButton > button:hover {
-            background: linear-gradient(135deg, #3730a3, #312e81);
+            background: linear-gradient(135deg, #600000, #450000);
             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(79, 70, 229, 0.35);
+            box-shadow: 0 12px 25px rgba(139, 0, 0, 0.5);
         }
         
         /* Text Area */
         .stTextArea textarea {
             border-radius: 20px;
-            border: 2px solid #d1d5db;
+            border: 2px solid #8b0000;
             padding: 1.5rem;
             font-size: 1.2rem;
             font-family: 'Cairo', sans-serif;
             direction: rtl;
             text-align: right;
-            background: #fafbfc;
+            background: #1a1a1a;
+            color: #ffffff;
             transition: all 0.3s ease;
         }
         
         .stTextArea textarea:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            border-color: #ff0000;
+            box-shadow: 0 0 0 4px rgba(139, 0, 0, 0.3);
             outline: none;
-            background: #ffffff;
+            background: #2a2a2a;
         }
         
         /* Features Grid */
@@ -297,27 +299,23 @@ st.markdown("""
         }
         
         .feature-card {
-            background: linear-gradient(135deg, #ffffff, #fafbfc);
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
             padding: 2.5rem 2rem;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            box-shadow: 0 10px 25px rgba(139, 0, 0, 0.2);
             transition: all 0.3s ease;
-            border: 1px solid #e8eaed;
+            border: 1px solid #8b0000;
+            color: #ffffff;
         }
         
         .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .feature-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.4);
         }
         
         .feature-card h4 {
-            color: #2d3748;
+            color: #ffffff;
             font-size: 1.5rem;
             margin-bottom: 1rem;
             font-family: 'Cairo', sans-serif;
@@ -325,39 +323,17 @@ st.markdown("""
         }
         
         .feature-card p {
-            color: #4a5568;
+            color: #cccccc;
             font-size: 1.1rem;
             line-height: 1.7;
             font-family: 'Cairo', sans-serif;
         }
         
-        /* Tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 1rem;
-            background: transparent;
-        }
-        
-        .stTabs [data-baseweb="tab"] {
-            background: #f1f5f9;
-            color: #475569;
-            border-radius: 15px;
-            padding: 1rem 2rem;
-            font-weight: 500;
-            font-family: 'Cairo', sans-serif;
-            border: 2px solid transparent;
-        }
-        
-        .stTabs [aria-selected="true"] {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
-            color: white;
-            border-color: #0ea5e9;
-        }
-        
         /* Quick Buttons */
         .quick-button {
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-            border: 2px solid #cbd5e1;
-            color: #1e293b;
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            border: 2px solid #8b0000;
+            color: #ffffff;
             border-radius: 15px;
             padding: 1rem 1.5rem;
             font-weight: 500;
@@ -365,24 +341,26 @@ st.markdown("""
             transition: all 0.3s ease;
             text-align: center;
             cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
         }
         
         .quick-button:hover {
-            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-            border-color: #0ea5e9;
-            color: #0ea5e9;
+            background: linear-gradient(135deg, #8b0000, #600000);
+            border-color: #ff0000;
+            color: #ffffff;
             transform: translateY(-2px);
         }
         
         /* Success Message */
         .success-message {
-            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-            color: #166534;
+            background: linear-gradient(135deg, #2a1a1a, #3a2a2a);
+            color: #ff6b6b;
             padding: 1.5rem;
             border-radius: 20px;
             text-align: center;
             margin: 2rem 0;
-            border-right: 5px solid #10b981;
+            border-right: 5px solid #8b0000;
             font-family: 'Cairo', sans-serif;
             font-weight: 500;
             font-size: 1.1rem;
@@ -390,12 +368,13 @@ st.markdown("""
         
         /* Footer */
         .footer {
-            background: linear-gradient(135deg, #2d3748, #4a5568);
+            background: linear-gradient(135deg, #000000, #1a1a1a);
             color: white;
             text-align: center;
             padding: 3rem 2rem;
             border-radius: 20px;
             margin-top: 4rem;
+            border: 1px solid #8b0000;
         }
         
         .footer h4 {
@@ -414,7 +393,7 @@ st.markdown("""
         
         /* Progress Bar */
         .stProgress > div > div > div > div {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            background: linear-gradient(135deg, #8b0000, #600000);
         }
         
         /* Warning and Error Messages */
@@ -424,54 +403,22 @@ st.markdown("""
             font-family: 'Cairo', sans-serif;
         }
         
-        /* Expander */
-        .stExpander {
-            background: white;
-            border-radius: 15px;
-            border: 1px solid #e2e8f0;
-        }
-        
         /* Headings */
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Cairo', sans-serif !important;
-            color: #1e293b;
+            color: #ffffff;
         }
         
         /* Regular text */
         p, div, span {
             font-family: 'Cairo', sans-serif;
+            color: #ffffff;
         }
         
         /* Markdown content */
         .stMarkdown {
             font-family: 'Cairo', sans-serif;
-        }
-        
-        /* Rating buttons */
-        .rating-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            margin: 2rem 0;
-            text-align: center;
-        }
-        
-        .rating-section .stButton > button {
-            background: #f8fafc;
-            color: #475569;
-            border: 2px solid #e2e8f0;
-            margin: 0.5rem;
-            width: auto;
-            padding: 0.5rem 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .rating-section .stButton > button:hover {
-            background: #fbbf24;
-            color: white;
-            border-color: #f59e0b;
-            transform: scale(1.1);
+            color: #ffffff;
         }
         
         /* Container spacing */
@@ -479,10 +426,29 @@ st.markdown("""
             padding-top: 1rem;
             padding-bottom: 1rem;
         }
+        
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# ===== الصفحة الرئيسية بدون sidebar =====
+# ===== تهيئة حالة الجلسة =====
+if 'current_query' not in st.session_state:
+    st.session_state.current_query = ""
+
+if 'dark_mode' not in st.session_state:
+    st.session_state.dark_mode = True
+
+# ===== وظيفة تحديث الاستعلام =====
+def update_query(new_query):
+    st.session_state.current_query = new_query
+
+# ===== الصفحة الرئيسية =====
 # Header
 st.markdown("""
     <div class="main-header">
@@ -531,57 +497,47 @@ st.markdown("""
         </div>
 """, unsafe_allow_html=True)
 
-# Initialize query variable
-query = ""
+# Quick Questions
+st.markdown("### أسئلة شائعة - اختر أحد الأسئلة التالية")
+col1, col2, col3, col4 = st.columns(4)
 
-# Single text area without tabs
+with col1:
+    if st.button("رسوم التسجيل", key="q1", use_container_width=True):
+        update_query("ما هي رسوم تسجيل الأراضي في الأردن؟")
+
+with col2:
+    if st.button("شروط البيع", key="q2", use_container_width=True):
+        update_query("ما هي شروط بيع الأراضي؟")
+
+with col3:
+    if st.button("الإرث", key="q3", use_container_width=True):
+        update_query("كيف يتم توزيع الإرث حسب القانون الأردني؟")
+
+with col4:
+    if st.button("التأمين", key="q4", use_container_width=True):
+        update_query("ما هو التأمين العقاري المطلوب؟")
+
+# Text area with current query
 st.markdown("### اكتب سؤالك هنا")
 query = st.text_area(
     "",
     height=120,
     placeholder="مثال: ما هي الإجراءات اللازمة لتسجيل قطعة أرض في الأردن؟",
+    value=st.session_state.current_query,
     key="main_query"
 )
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Quick Questions
-st.markdown("### أسئلة شائعة - اضغط للإجابة السريعة")
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    if st.button("رسوم التسجيل", key="q1"):
-        query = "ما هي رسوم تسجيل الأراضي في الأردن؟"
-        st.session_state.quick_query = query
-
-with col2:
-    if st.button("شروط البيع", key="q2"):
-        query = "ما هي شروط بيع الأراضي؟"
-        st.session_state.quick_query = query
-
-with col3:
-    if st.button("الإرث", key="q3"):
-        query = "كيف يتم توزيع الإرث حسب القانون الأردني؟"
-        st.session_state.quick_query = query
-
-with col4:
-    if st.button("التأمين", key="q4"):
-        query = "ما هو التأمين العقاري المطلوب؟"
-        st.session_state.quick_query = query
-
-# Use quick query if set
-if hasattr(st.session_state, 'quick_query') and st.session_state.quick_query:
-    query = st.session_state.quick_query
-
 # Send Button
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    send = st.button("احصل على الإجابة الشافية", type="primary")
+    send = st.button("احصل على الإجابة الشافية", type="primary", use_container_width=True)
 
 # Processing
 if send:
     if not query.strip():
-        st.warning("⚠️ الرجاء إدخال سؤال قبل الإرسال")
+        st.warning("الرجاء إدخال سؤال قبل الإرسال")
     else:
         # Loading animation
         with st.spinner("جاري البحث في قاعدة البيانات القانونية المتخصصة..."):
@@ -595,10 +551,6 @@ if send:
                 # client = connect_to_db()
                 # answer = IntelligentRAGSystem(query, client)
                 # client.close()
-                
-                # Clear the quick query after processing
-                if hasattr(st.session_state, 'quick_query'):
-                    st.session_state.quick_query = ""
                 
                 # Simulated answer for demonstration
                 answer = """
@@ -628,46 +580,16 @@ if send:
                         <div class="answer-text">{answer}</div>
                     </div>
                 """, unsafe_allow_html=True)
-                
-                # Show sources
-                st.markdown("### 📚 المصادر والمراجع القانونية")
-                with st.expander("اضغط لعرض المصادر المعتمدة"):
-                    st.markdown("""
-                    - قانون الأراضي الأردني رقم 40 لسنة 1952 وتعديلاته
-                    - تعليمات دائرة الأراضي والمساحة النافذة
-                    - النشرات الرسمية لوزارة العدل الأردنية
-                    - الأنظمة والقرارات الصادرة عن مجلس الوزراء
-                    - القرارات القضائية ذات الصلة من محاكم العدل العليا
-                    """)
-                
-                # Rating section
-                st.markdown("""
-                    <div class="rating-section">
-                        <h4>📝 ساعدنا في تحسين خدماتنا - قيم الإجابة</h4>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                col1, col2, col3, col4, col5 = st.columns(5)
-                with col1:
-                    st.button("⭐", key="rate1")
-                with col2:
-                    st.button("⭐⭐", key="rate2")
-                with col3:
-                    st.button("⭐⭐⭐", key="rate3")
-                with col4:
-                    st.button("⭐⭐⭐⭐", key="rate4")
-                with col5:
-                    st.button("⭐⭐⭐⭐⭐", key="rate5")
                     
             except Exception as e:
-                st.error(f"❌ عذراً، حدث خطأ أثناء معالجة السؤال: {e}")
+                st.error(f"عذراً، حدث خطأ أثناء معالجة السؤال: {e}")
 
 # Footer
 st.markdown("""
     <div class="footer">
-        <h4>🇯🇴 ALIS - مساعد الأراضي والتشريعات الأردني</h4>
+        <h4>ALIS - مساعد الأراضي والتشريعات الأردني</h4>
         <p>تم تطويره بواسطة فريق ALIS المتخصص | جميع الحقوق محفوظة © 2024</p>
-        <p>📧 info@alis.jo | 📱 +962-6-1234567 | 🌐 www.alis.jo</p>
+        <p>info@alis.jo | +962-6-1234567 | www.alis.jo</p>
         <p>نظام ذكي موثوق للاستشارات القانونية - مرخص من وزارة الاقتصاد الرقمي والريادة</p>
     </div>
 """, unsafe_allow_html=True)
