@@ -1,4 +1,4 @@
-# Artificial Intelligence for Land and Survey
+# Artificial Intelligence for Land and Survey (AILS)
 
 Artificial Intelligence for Land and Survey is an AI assistant launched by Eyad Al-Naimi and Naser Diabat.
 
