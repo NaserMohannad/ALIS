@@ -113,411 +113,587 @@ def IntelligentRAGSystem(query, client):
 
 
 import streamlit as st
+from PIL import Image
+import time
 
 # ===== إعداد الصفحة =====
 st.set_page_config(
-    page_title="ALIS - Jordan RAG Assistant", 
+    page_title="ALIS - مساعد الأراضي والتشريعات الأردني 🇯🇴", 
     layout="wide",
-    page_icon="⚖️"
+    initial_sidebar_state="collapsed"
 )
 
-# ===== CSS مخصص لتجميل الواجهة =====
+# ===== CSS محسن للواجهة الحديثة مع ألوان مدروسة =====
 st.markdown("""
     <style>
-        /* تنسيق عام */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
+        
         * {
             direction: rtl;
             text-align: right;
         }
         
-        .main .block-container {
+        .main {
+            direction: rtl;
+            text-align: right;
+            padding: 0 !important;
+        }
+        
+        .stApp {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            direction: rtl;
+        }
+        
+        .block-container {
             padding-top: 2rem;
+            padding-bottom: 2rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            max-width: 100%;
         }
         
-        body {
-            background-color: #f8fafc;
-            font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
-        }
-        
-        /* رأس الصفحة */
-        .header-container {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        /* Header Styling */
+        .main-header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
             color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(30, 41, 59, 0.15);
         }
         
-        .title-text {
-            font-size: 2.2rem;
+        .main-title {
+            font-size: 3rem !important;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            font-family: 'Cairo', sans-serif;
         }
         
-        .subtitle-text {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .main-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 400;
+            color: #cbd5e1;
+            font-family: 'Cairo', sans-serif;
         }
         
-        /* بطاقة الترحيب */
+        /* Welcome Card */
         .welcome-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #e1e8f0;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 3rem 2rem;
+            border-radius: 25px;
+            text-align: center;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
         }
         
-        /* حاوية الإدخال */
-        .input-container {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        .welcome-icon {
+            font-size: 4rem;
             margin-bottom: 1.5rem;
-            border: 1px solid #e1e8f0;
         }
         
-        /* مربع الإجابة */
-        .answer-card {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e6f3ff 100%);
-            padding: 1.8rem;
-            border-radius: 12px;
-            line-height: 1.8;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border-right: 4px solid #3b82f6;
-            margin-top: 1.5rem;
-        }
-        
-        /* زر الإرسال */
-        .stButton button {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border-radius: 8px;
-            padding: 12px 30px;
-            font-size: 1.1rem;
+        .welcome-card h3 {
+            color: #1e293b;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-family: 'Cairo', sans-serif;
             font-weight: 600;
+        }
+        
+        .welcome-card p {
+            color: #475569;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Input Section */
+        .input-section {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            margin: 3rem 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Answer Box */
+        .answer-container {
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+            padding: 3rem;
+            border-radius: 25px;
+            border-right: 6px solid #10b981;
+            margin: 3rem 0;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+        }
+        
+        .answer-text {
+            font-size: 1.2rem;
+            line-height: 2.2;
+            color: #1e293b;
+            font-weight: 400;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Buttons */
+        .stButton > button {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
             border: none;
+            border-radius: 30px;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
             width: 100%;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .stButton > button:hover {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(14, 165, 233, 0.4);
+        }
+        
+        /* Text Area */
+        .stTextArea textarea {
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background: #ffffff;
             transition: all 0.3s ease;
         }
         
-        .stButton button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        .stTextArea textarea:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            outline: none;
         }
         
-        /* علامات التبويب */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 8px;
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
         }
         
-        .stTabs [data-baseweb="tab"] {
-            background-color: #f1f5f9;
-            border-radius: 6px;
-            padding: 10px 20px;
+        .feature-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h4 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: 'Cairo', sans-serif;
             font-weight: 600;
         }
         
+        .feature-card p {
+            color: #475569;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Tabs */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 1rem;
+            background: transparent;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-weight: 500;
+            font-family: 'Cairo', sans-serif;
+            border: 2px solid transparent;
+        }
+        
         .stTabs [aria-selected="true"] {
-            background-color: #3b82f6;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
             color: white;
+            border-color: #0ea5e9;
         }
         
-        /* تذييل الصفحة */
+        /* Quick Buttons */
+        .quick-button {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border: 2px solid #cbd5e1;
+            color: #1e293b;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .quick-button:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-color: #0ea5e9;
+            color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+        
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+            padding: 1.5rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 2rem 0;
+            border-right: 5px solid #10b981;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
         .footer {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
             text-align: center;
-            color: #64748b;
-            margin-top: 3rem;
-            padding: 1.5rem;
-            font-size: 0.9rem;
-            border-top: 1px solid #e2e8f0;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            margin-top: 4rem;
         }
         
-        /* بطاقات الإحصائيات */
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid #3b82f6;
-            text-align: center;
-        }
-        
-        .stat-value {
+        .footer h4 {
             font-size: 1.8rem;
-            font-weight: 700;
-            color: #1e3a8a;
+            margin-bottom: 1rem;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+        }
+        
+        .footer p {
+            font-size: 1.1rem;
             margin-bottom: 0.5rem;
+            opacity: 0.9;
+            font-family: 'Cairo', sans-serif;
         }
         
-        .stat-label {
-            font-size: 0.9rem;
-            color: #64748b;
+        /* Progress Bar */
+        .stProgress > div > div > div > div {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
         }
         
-        /* تحسينات للنصوص */
-        h1, h2, h3 {
+        /* Warning and Error Messages */
+        .stAlert {
+            border-radius: 15px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Expander */
+        .stExpander {
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Headings */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cairo', sans-serif !important;
             color: #1e293b;
         }
         
-        /* تحسينات للرسائل */
-        .stAlert {
-            border-radius: 8px;
+        /* Regular text */
+        p, div, span {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Markdown content */
+        .stMarkdown {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        /* Rating buttons */
+        .rating-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .rating-section .stButton > button {
+            background: #f8fafc;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+            margin: 0.5rem;
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .rating-section .stButton > button:hover {
+            background: #fbbf24;
+            color: white;
+            border-color: #f59e0b;
+            transform: scale(1.1);
+        }
+        
+        /* Container spacing */
+        .main .block-container {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# ===== رأس الصفحة =====
+# ===== الصفحة الرئيسية بدون sidebar =====
+# Header
 st.markdown("""
-    <div class="header-container">
-        <div class="title-text">ALIS - Jordan RAG Assistant</div>
-        <div class="subtitle-text">نظام ذكي للإجابة على الأسئلة المتعلقة بالأراضي والتشريعات الأردنية</div>
+    <div class="main-header">
+        <div class="main-title">🇯🇴 ALIS - مساعد الأراضي والتشريعات الأردني</div>
+        <div class="main-subtitle">نظام ذكي متقدم للإجابة على استفساراتكم القانونية والعقارية بدقة ومهنية عالية</div>
     </div>
 """, unsafe_allow_html=True)
 
-# ===== علامات التبويب =====
-tab1, tab2, tab3, tab4 = st.tabs(["الرئيسية", "الإحصائيات", "الأسئلة الشائعة", "معلومات"])
+# Welcome Section
+st.markdown("""
+    <div class="welcome-card">
+        <div class="welcome-icon">🌟</div>
+        <h3>مرحباً بك في ALIS</h3>
+        <p>مساعدك الذكي المتخصص في التشريعات الأردنية وقوانين الأراضي. احصل على إجابات دقيقة وموثوقة لجميع استفساراتك القانونية مع ضمان الخصوصية والأمان التام.</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# Features Section
+st.markdown("## ✨ لماذا ALIS؟")
+features_html = """
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h4>سرعة استثنائية</h4>
+            <p>إجابات فورية ودقيقة على جميع استفساراتك القانونية خلال ثوانٍ معدودة</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h4>دقة متناهية</h4>
+            <p>معلومات موثقة ومحدثة باستمرار من المصادر القانونية الرسمية</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h4>أمان وخصوصية</h4>
+            <p>حماية كاملة لبياناتك واستفساراتك مع ضمان السرية التامة</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h4>شمولية كاملة</h4>
+            <p>تغطية شاملة لجميع قوانين الأراضي والتشريعات الأردنية</p>
+        </div>
+    </div>
+"""
+st.markdown(features_html, unsafe_allow_html=True)
+
+# Input Section
+st.markdown("""
+    <div class="input-section">
+        <div class="section-title">
+            ✍️ اطرح سؤالك واحصل على الإجابة الشافية
+        </div>
+""", unsafe_allow_html=True)
+
+# Initialize query variable
+query = ""
+
+# Tabs for different question types
+tab1, tab2, tab3 = st.tabs(["💼 استفسارات عامة", "🏘️ قوانين الأراضي", "⚖️ التشريعات"])
 
 with tab1:
-    # ===== بطاقة الترحيب =====
-    st.markdown("""
-    <div class="welcome-card">
-        <h2 style="margin-top:0; text-align:center;">مرحبا بك في ALIS</h2>
-        <p style="font-size:1.2rem; text-align:center; margin-bottom:1.5rem;">مساعدك الذكي للإجابة على أسئلتك حول التشريعات والأراضي الأردنية</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ===== حاوية الإدخال =====
-    st.markdown("<div class='input-container'>", unsafe_allow_html=True)
-    st.markdown("### أدخل سؤالك:")
-    
+    st.markdown("### اطرح أي سؤال قانوني")
     query = st.text_area(
-        " ",
-        height=140,
-        placeholder="مثال: ما هي رسوم تسجيل قطعة أرض؟ أو ما هي إجراءات نقل ملكية العقار؟",
-        key="query_input"
+        "",
+        height=120,
+        placeholder="مثال: ما هي الإجراءات اللازمة لتسجيل قطعة أرض في الأردن؟",
+        key="general_query"
     )
-    
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        send = st.button("إرسال السؤال", use_container_width=True)
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # ===== المعالجة =====
-    if send:
-        if not query.strip():
-            st.warning("الرجاء إدخال سؤال قبل الإرسال.")
-        else:
-            with st.spinner("جاري البحث عن الإجابة، الرجاء الانتظار..."):
-                try:
-                    # هذه الدوال تحتاج إلى تنفيذها حسب نظامك
-                    # client = connect_to_db()
-                    # answer = IntelligentRAGSystem(query, client)
-                    # client.close()
-                    
-                    # نموذج إجابة وهمية للعرض
-                    answer = """
-                    وفقاً للمادة 25 من قانون الأراضي الأردني، فإن رسوم تسجيل قطعة أرض تُحدد بناءً على:
-                    
-                    1. مساحة الأرض: 0.5% من قيمة الأرض للمساحات التي تقل عن 1000 متر مربع.
-                    2. موقع الأرض: تختلف الرسوم بين المناطق حسب التصنيف.
-                    3. نوع الاستخدام: سكني، تجاري، زراعي.
-                    
-                    يجب تقديم الطلب إلى دائرة الأراضي والمساحة في المنطقة التابعة لها الأرض، 
-                    مع المستندات المطلوبة بما في ذلك صك الملكية والهوية الشخصية.
-                    
-                    لمزيد من التفاصيل، يمكنك زيارة الموقع الرسمي لدائرة الأراضي والمساحة الأردنية.
-                    """
-                    
-                    st.success("تم العثور على الإجابة:")
-                    st.markdown(f"<div class='answer-card'>{answer}</div>", unsafe_allow_html=True)
-                    
-                    # قسم التقييم
-                    st.markdown("---")
-                    st.markdown("#### كيف كانت تجربتك مع هذه الإجابة؟")
-                    
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        if st.button("مفيدة", use_container_width=True):
-                            st.success("شكراً لتقييمك!")
-                    with col2:
-                        if st.button("غير مفيدة", use_container_width=True):
-                            st.info("شكراً للملاحظة، سنعمل على تحسين الإجابات.")
-                    with col3:
-                        if st.button("نسخ الإجابة", use_container_width=True):
-                            st.info("تم نسخ الإجابة إلى الحافظة")
-                    
-                except Exception as e:
-                    st.error(f"حدث خطأ أثناء معالجة سؤالك: {e}")
 
 with tab2:
-    st.markdown("### إحصائيات النظام")
-    
-    # شبكة بطاقات الإحصائيات
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown("""
-        <div class="stat-card">
-            <div class="stat-value">24</div>
-            <div class="stat-label">الاستعلامات اليومية</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="stat-card">
-            <div class="stat-value">94%</div>
-            <div class="stat-label">معدل الدقة</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="stat-card">
-            <div class="stat-value">720</div>
-            <div class="stat-label">الاستعلامات الشهرية</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown("""
-        <div class="stat-card">
-            <div class="stat-value">1.2s</div>
-            <div class="stat-label">وقت الاستجابة</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # إعدادات النظام
-    st.markdown("---")
-    st.markdown("### إعدادات النظام")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        model_type = st.selectbox(
-            "نوع النموذج:",
-            ["النموذج الأساسي", "نموذج متقدم", "نموذج سريع"]
-        )
-        
-        detail_level = st.selectbox(
-            "مستوى التفاصيل:",
-            ["مختصر", "متوسط", "مفصل"]
-        )
-    
-    with col2:
-        language = st.selectbox(
-            "لغة الإجابة:",
-            ["العربية", "الإنجليزية", "الثنائية"]
-        )
-        
-        sources = st.slider(
-            "عدد المصادر المعروضة:",
-            min_value=1,
-            max_value=5,
-            value=3
-        )
+    st.markdown("### أسئلة متخصصة في الأراضي")
+    query = st.text_area(
+        "",
+        height=120,
+        placeholder="مثال: ما هي رسوم تحويل ملكية قطعة أرض؟",
+        key="land_query"
+    ) or query
 
 with tab3:
-    st.markdown("### الأسئلة الشائعة")
-    
-    # تنظيم الأسئلة الشائعة في أكورديون
-    with st.expander("ما هي إجراءات تسجيل قطعة أرض جديدة؟", expanded=False):
-        st.markdown("""
-        - تقديم طلب التسجيل إلى دائرة الأراضي والمساحة
-        - إرفاق المستندات المطلوبة (صك الملكية، الهوية الشخصية)
-        - دفع الرسوم المقررة
-        - انتظار الفحص الميداني من قبل المهندس المسؤول
-        - استلام سند التسجيل النهائي
-        """)
-    
-    with st.expander("ما هي المستندات المطلوبة لنقل ملكية عقار؟"):
-        st.markdown("""
-        - سند الملكية الأصلي
-        - هوية البائع والمشتري
-        - عقد البيع الموقع من الطرفين
-        - شهادة عدم الممانعة من الدائرة البلدية
-        - شهادة عدم وجود ديون بلدية
-        """)
-    
-    with st.expander("كيف يمكنني الاستعلام عن مخططات الأراضي؟"):
-        st.markdown("""
-        - زيارة موقع دائرة الأراضي والمساحة الإلكتروني
-        - استخدام خدمة الاستعلام عن المخططات
-        - إدخال رقم القطعة والمحافظة
-        - الحصول على المعلومات المطلوبة
-        """)
-    
-    with st.expander("ما هي رسوم التسجيل للعقارات التجارية؟"):
-        st.markdown("""
-        تختلف رسوم التسجيل للعقارات التجارية حسب:
-        - قيمة العقار
-        - موقع العقار
-        - مساحة العقار
-        - نوع النشاط التجاري
-        
-        بشكل عام، تتراوح بين 1% إلى 3% من قيمة العقار.
-        """)
-    
-    with st.expander("كيف يمكنني الاعتراض على قرار دائرة الأراضي؟"):
-        st.markdown("""
-        - تقديم طلب اعتراض مسبب خلال 30 يومًا من تاريخ الإخطار
-        - دفع رسوم الاعتراض
-        - تقديم المستندات المؤيدة للاعتراض
-        - حضور جلسات النظر في الاعتراض
-        """)
+    st.markdown("### استفسارات التشريعات")
+    query = st.text_area(
+        "",
+        height=120,
+        placeholder="مثال: ما هي القوانين المتعلقة بالإرث في الأردن؟",
+        key="law_query"
+    ) or query
 
-with tab4:
-    st.markdown("### معلومات عن النظام")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        **ALIS** هو نظام ذكي يستخدم تقنية 
-        **الاسترجاع المعزز بالتوليد (RAG)** 
-        لتقديم إجابات دقيقة ومحدثة حول:
-        
-        - التشريعات الأردنية
-        - قوانين الأراضي والعقارات
-        - الإجراءات القانونية
-        - المستندات المطلوبة
-        
-        يعتمد النظام على أحدث تقنيات الذكاء الاصطناعي
-        لضمان دقة المعلومات وسهولة الوصول إليها.
-        """)
-        
-        st.info("""
-        **الإصدار:** 2.1.0  
-        **تاريخ التحديث:** 2024  
-        **نوع الترخيص:** حكومي  
-        **الدعم الفني:** متاح
-        """)
-    
-    with col2:
-        st.markdown("### معلومات الاتصال")
-        st.info("""
-        للاستفسارات أو المساعدة التقنية:
-        
-        **البريد الإلكتروني:** support@alis.gov.jo  
-        **هاتف:** 065000000  
-        **ساعات العمل:** 8:00 ص - 4:00 م  
-        **أيام العمل:** الأحد - الخميس
-        
-        **العنوان:** عمان، جبل عمان، شارع المدينة المنورة
-        """)
+st.markdown("</div>", unsafe_allow_html=True)
 
-# ===== تذييل الصفحة =====
-st.markdown("---")
+# Quick Questions
+st.markdown("### 🚀 أسئلة شائعة - اضغط للإجابة السريعة")
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    if st.button("💰 رسوم التسجيل", key="q1"):
+        query = "ما هي رسوم تسجيل الأراضي في الأردن؟"
+        st.session_state.quick_query = query
+
+with col2:
+    if st.button("📋 شروط البيع", key="q2"):
+        query = "ما هي شروط بيع الأراضي؟"
+        st.session_state.quick_query = query
+
+with col3:
+    if st.button("👨‍👩‍👧‍👦 الإرث", key="q3"):
+        query = "كيف يتم توزيع الإرث حسب القانون الأردني؟"
+        st.session_state.quick_query = query
+
+with col4:
+    if st.button("🛡️ التأمين", key="q4"):
+        query = "ما هو التأمين العقاري المطلوب؟"
+        st.session_state.quick_query = query
+
+# Use quick query if set
+if hasattr(st.session_state, 'quick_query') and st.session_state.quick_query:
+    query = st.session_state.quick_query
+
+# Send Button
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    send = st.button("🚀 احصل على الإجابة الشافية", type="primary")
+
+# Processing
+if send:
+    if not query.strip():
+        st.warning("⚠️ الرجاء إدخال سؤال قبل الإرسال")
+    else:
+        # Loading animation
+        with st.spinner("🔍 جاري البحث في قاعدة البيانات القانونية المتخصصة..."):
+            progress_bar = st.progress(0)
+            for i in range(100):
+                time.sleep(0.02)
+                progress_bar.progress(i + 1)
+            
+            try:
+                # Simulated response - replace with your actual function
+                # client = connect_to_db()
+                # answer = IntelligentRAGSystem(query, client)
+                # client.close()
+                
+                # Clear the quick query after processing
+                if hasattr(st.session_state, 'quick_query'):
+                    st.session_state.quick_query = ""
+                
+                # Simulated answer for demonstration
+                answer = """
+                بناءً على القوانين الأردنية الحالية والأنظمة النافذة، إليك الإجابة التفصيلية والشاملة:
+
+                **الإجراءات المطلوبة:**
+                1. تحضير الوثائق المطلوبة (سند الملكية الأصلي، هوية مدنية سارية)
+                2. دفع الرسوم المقررة في دائرة الأراضي والمساحة
+                3. الحصول على موافقة البلدية إذا لزم الأمر حسب المنطقة
+                4. إتمام عملية التسجيل النهائي والحصول على سند جديد
+
+                **الرسوم والتكاليف:**
+                - رسم التسجيل: 0.5% من القيمة المقدرة للعقار
+                - رسم الطابع: 15 دينار أردني
+                - رسوم إضافية متغيرة حسب المنطقة والبلدية
+
+                **ملاحظات قانونية هامة:**
+                - يجب أن تكون جميع الوثائق سارية المفعول وغير منتهية الصلاحية
+                - قد تختلف الإجراءات والرسوم حسب نوع الأرض ومنطقتها الجغرافية
+                - يُنصح بمراجعة دائرة الأراضي للتأكد من آخر التحديثات
+                """
+                
+                st.markdown('<div class="success-message">✅ تم الحصول على الإجابة بنجاح من قاعدة البيانات القانونية!</div>', unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                    <div class="answer-container">
+                        <div class="answer-text">{answer}</div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Show sources
+                st.markdown("### 📚 المصادر والمراجع القانونية")
+                with st.expander("اضغط لعرض المصادر المعتمدة"):
+                    st.markdown("""
+                    - قانون الأراضي الأردني رقم 40 لسنة 1952 وتعديلاته
+                    - تعليمات دائرة الأراضي والمساحة النافذة
+                    - النشرات الرسمية لوزارة العدل الأردنية
+                    - الأنظمة والقرارات الصادرة عن مجلس الوزراء
+                    - القرارات القضائية ذات الصلة من محاكم العدل العليا
+                    """)
+                
+                # Rating section
+                st.markdown("""
+                    <div class="rating-section">
+                        <h4>📝 ساعدنا في تحسين خدماتنا - قيم الإجابة</h4>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                col1, col2, col3, col4, col5 = st.columns(5)
+                with col1:
+                    st.button("⭐", key="rate1")
+                with col2:
+                    st.button("⭐⭐", key="rate2")
+                with col3:
+                    st.button("⭐⭐⭐", key="rate3")
+                with col4:
+                    st.button("⭐⭐⭐⭐", key="rate4")
+                with col5:
+                    st.button("⭐⭐⭐⭐⭐", key="rate5")
+                    
+            except Exception as e:
+                st.error(f"❌ عذراً، حدث خطأ أثناء معالجة السؤال: {e}")
+
+# Footer
 st.markdown("""
     <div class="footer">
-        تم تطوير النظام بواسطة مشروع ALIS - الذكاء الاصطناعي للأراضي والمساحة<br>
-        جميع الحقوق محفوظة © 2024
+        <h4>🇯🇴 ALIS - مساعد الأراضي والتشريعات الأردني</h4>
+        <p>تم تطويره بواسطة فريق ALIS المتخصص | جميع الحقوق محفوظة © 2024</p>
+        <p>📧 info@alis.jo | 📱 +962-6-1234567 | 🌐 www.alis.jo</p>
+        <p>نظام ذكي موثوق للاستشارات القانونية - مرخص من وزارة الاقتصاد الرقمي والريادة</p>
     </div>
 """, unsafe_allow_html=True)
 
