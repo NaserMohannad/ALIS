@@ -78,13 +78,12 @@ def llm_response(query, docs, mode="faq"):
     ENDPOINT = "https://api.perplexity.ai/chat/completions"
 
     system_prompt = """
-You are an intelligent assistant specialized in land and cadastral matters in Jordan.  
-Answer **only** from the provided context.  
-If you do not find a relevant answer, reply in Arabic with exactly: "لا أعلم الجواب، غالباً لا يتعلق سؤالك بمجالي".  
-Be precise, concise, and respond strictly in Arabic.  
-Do not provide any external links or references.  
-Focus solely on land and cadastral issues in Jordan, not general legal consultation.
-  """
+    أنت مساعد ذكي متخصص في مسائل الأراضي والمساحة في الأردن.
+    أجب فقط من السياق المقدم. إذا لم تجد إجابة ذات صلة، أجب بالعربية: "لا أعلم الجواب".
+    كن دقيقاً ومختصراً وركز على الإجابات العربية.
+    لا تقدم أي روابط أو مراجع خارجية في إجابتك.
+    تخصص فقط في المساعدة بشأن الأراضي والمساحة وليس الاستشارة القانونية العامة.
+    """
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -478,10 +477,6 @@ features_html = """
             <p>معلومات موثقة ومحدثة باستمرار من المصادر المتخصصة في الأراضي والمساحة</p>
         </div>
         <div class="feature-card">
-            <h4>أمان وخصوصية</h4>
-            <p>حماية كاملة لبياناتك واستفساراتك مع ضمان السرية التامة</p>
-        </div>
-        <div class="feature-card">
             <h4>تخصص مركز</h4>
             <p>تركيز كامل على مسائل الأراضي والمساحة في الأردن فقط</p>
         </div>
@@ -503,19 +498,19 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     if st.button("رسوم التسجيل", key="q1", use_container_width=True):
-        update_query("كم تبلغ رسوم تسجيل الأراضي في الأردن؟")
+        update_query("ما هي رسوم تسجيل الأراضي في الأردن؟")
 
 with col2:
-    if st.button("الإفراز بين الشركاء", key="q2", use_container_width=True):
-        update_query("ما هي رسوم الإفراز بين الشركاء حسب القانون الأردني؟")
+    if st.button("إجراءات النقل", key="q2", use_container_width=True):
+        update_query("ما هي إجراءات نقل ملكية الأراضي؟")
 
 with col3:
-    if st.button("معاملات البيع", key="q3", use_container_width=True):
-        update_query("ما هي شروط عقد البيع بالتقسيط في الأردن؟")
+    if st.button("أنواع الأراضي", key="q3", use_container_width=True):
+        update_query("ما هي أنواع الأراضي في الأردن؟")
 
 with col4:
-    if st.button("الوكالات", key="q4", use_container_width=True):
-        update_query("ما هي شروط صحة الوكالة في معاملات الأراضي؟")
+    if st.button("المساحة والحدود", key="q4", use_container_width=True):
+        update_query("كيف يتم تحديد مساحة وحدود قطعة الأرض؟")
 
 # Text area with current query
 st.markdown("### اكتب سؤالك هنا")
@@ -532,7 +527,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 # Send Button
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    send = st.button("احصل على الإجابة", type="primary", use_container_width=True)
+    send = st.button("احصل على الإجابة الشافية", type="primary", use_container_width=True)
 
 # Processing
 if send:
@@ -540,7 +535,7 @@ if send:
         st.warning("الرجاء إدخال سؤال قبل الإرسال")
     else:
         # Loading animation
-        with st.spinner("جاري البحث والاجابة..."):
+        with st.spinner("جاري البحث في قاعدة البيانات المتخصصة..."):
             progress_bar = st.progress(0)
             for i in range(100):
                 time.sleep(0.02)
@@ -568,20 +563,10 @@ if send:
 st.markdown("""
     <div class="footer">
         <h4>ALIS - مساعد الأراضي والمساحة الأردني</h4>
-        <p>تم تطويره بواسطة: <strong>Eyad Al-Naimi & Naser Diabat</strong> | جميع الحقوق محفوظة © 2025</p>
+        <p>تم تطويره بواسطة: <strong>إياد النعيمي وناصر ديابات</strong> | جميع الحقوق محفوظة © 2024</p>
         <p>📧 diabatnaser7@gmail.com | efalnaimi22@gmail.com</p>
         <p>💼 <a href="https://www.linkedin.com/in/naser-diabat-b857232b9/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Naser Diabat</a> | 
            <a href="https://www.linkedin.com/in/eyad-naimi-1401ba276/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Eyad Al-Naimi</a></p>
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
