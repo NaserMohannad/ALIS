@@ -557,7 +557,7 @@ if send:
 # Footer
 st.markdown("""
     <div class="footer">
-        <h4>ALIS - مساعد الأراضي والمساحة الأردني</h4>
+        <h4>AILS - مساعد الأراضي والمساحة الأردني</h4>
         <p>تم تطويره بواسطة: <strong>إياد النعيمي وناصر ديابات</strong> | جميع الحقوق محفوظة © 2025</p>
         <p>📧 diabatnaser7@gmail.com | efalnaimi22@gmail.com</p>
         <p>💼 <a href="https://www.linkedin.com/in/naser-diabat-b857232b9/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Naser Diabat</a> | 
@@ -565,6 +565,7 @@ st.markdown("""
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
+
 
 
 
