@@ -503,19 +503,19 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     if st.button("رسوم التسجيل", key="q1", use_container_width=True):
-        update_query("ما هي رسوم تسجيل الأراضي في الأردن؟")
+        update_query("كم تبلغ رسوم تسجيل الأراضي في الأردن؟")
 
 with col2:
-    if st.button("إجراءات النقل", key="q2", use_container_width=True):
-        update_query("ما هي إجراءات نقل ملكية الأراضي؟")
+    if st.button("الإفراز بين الشركاء", key="q2", use_container_width=True):
+        update_query("ما هي رسوم الإفراز بين الشركاء حسب القانون الأردني؟")
 
 with col3:
-    if st.button("أنواع الأراضي", key="q3", use_container_width=True):
-        update_query("ما هي أنواع الأراضي في الأردن؟")
+    if st.button("معاملات البيع", key="q3", use_container_width=True):
+        update_query("ما هي شروط عقد البيع بالتقسيط في الأردن؟")
 
 with col4:
-    if st.button("المساحة والحدود", key="q4", use_container_width=True):
-        update_query("كيف يتم تحديد مساحة وحدود قطعة الأرض؟")
+    if st.button("الوكالات", key="q4", use_container_width=True):
+        update_query("ما هي شروط صحة الوكالة في معاملات الأراضي؟")
 
 # Text area with current query
 st.markdown("### اكتب سؤالك هنا")
@@ -532,7 +532,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 # Send Button
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    send = st.button("احصل على الإجابة الشافية", type="primary", use_container_width=True)
+    send = st.button("احصل على الإجابة", type="primary", use_container_width=True)
 
 # Processing
 if send:
@@ -540,7 +540,7 @@ if send:
         st.warning("الرجاء إدخال سؤال قبل الإرسال")
     else:
         # Loading animation
-        with st.spinner("جاري البحث في قاعدة البيانات المتخصصة..."):
+        with st.spinner("جاري البحث والاجابة..."):
             progress_bar = st.progress(0)
             for i in range(100):
                 time.sleep(0.02)
@@ -568,9 +568,11 @@ if send:
 st.markdown("""
     <div class="footer">
         <h4>ALIS - مساعد الأراضي والمساحة الأردني</h4>
-        <p>تم تطويره بواسطة فريق ALIS المتخصص | جميع الحقوق محفوظة © 2024</p>
-        <p>info@alis.jo | +962-6-1234567 | www.alis.jo</p>
-        <p>نظام ذكي متخصص في الأراضي والمساحة - مرخص من وزارة الاقتصاد الرقمي والريادة</p>
+        <p>تم تطويره بواسطة: <strong>Eyad Al-Naimi & Naser Diabat</strong> | جميع الحقوق محفوظة © 2025</p>
+        <p>📧 diabatnaser7@gmail.com | efalnaimi22@gmail.com</p>
+        <p>💼 <a href="https://www.linkedin.com/in/naser-diabat-b857232b9/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Naser Diabat</a> | 
+           <a href="https://www.linkedin.com/in/eyad-naimi-1401ba276/" target="_blank" style="color: #ff6b6b; text-decoration: none;">Eyad Al-Naimi</a></p>
+        <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
 
