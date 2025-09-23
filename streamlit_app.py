@@ -116,14 +116,12 @@ def IntelligentRAGSystem(query, client):
         return llm_response(query, law_docs, mode="law")
 
 
-# ===== إعداد الصفحة =====
 st.set_page_config(
     page_title="AILS - مساعد الأراضي والمساحة الأردني", 
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ===== CSS محسن للواجهة الحديثة مع ثيم أحمر وأسود =====
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
@@ -437,19 +435,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ===== تهيئة حالة الجلسة =====
 if 'current_query' not in st.session_state:
     st.session_state.current_query = ""
 
 if 'dark_mode' not in st.session_state:
     st.session_state.dark_mode = True
 
-# ===== وظيفة تحديث الاستعلام =====
 def update_query(new_query):
     st.session_state.current_query = new_query
 
-# ===== الصفحة الرئيسية =====
-# Header
 st.markdown("""
     <div class="main-header">
         <div class="main-title">AILS - مساعد الأراضي والمساحة الأردني</div>
@@ -457,7 +451,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Welcome Section
 st.markdown("""
     <div class="welcome-card">
         <h3>مرحباً بك في AILS</h3>
@@ -465,7 +458,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Features Section
 st.markdown("## لماذا AILS؟")
 features_html = """
     <div class="features-grid">
@@ -485,9 +477,7 @@ features_html = """
 """
 st.markdown(features_html, unsafe_allow_html=True)
 
-# Input Section
 
-# Quick Questions
 st.markdown("### أسئلة شائعة - اختر أحد الأسئلة التالية")
 col1, col2, col3, col4 = st.columns(4)
 
@@ -507,7 +497,6 @@ with col4:
     if st.button("المساحة والحدود", key="q4", use_container_width=True):
         update_query("كيف يتم تحديد مساحة وحدود قطعة الأرض؟")
 
-# Text area with current query
 st.markdown("### اكتب سؤالك هنا")
 query = st.text_area(
     "",
@@ -519,17 +508,14 @@ query = st.text_area(
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Send Button
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     send = st.button("احصل على الإجابة الشافية", type="primary", use_container_width=True)
 
-# Processing
 if send:
     if not query.strip():
         st.warning("الرجاء إدخال سؤال قبل الإرسال")
     else:
-        # Loading animation
         with st.spinner("جاري البحث في قاعدة البيانات المتخصصة..."):
             progress_bar = st.progress(0)
             for i in range(100):
@@ -537,12 +523,10 @@ if send:
                 progress_bar.progress(i + 1)
             
             try:
-                # ربط الباك إند بالفرونت إند
                 client = connect_to_db()
                 answer = IntelligentRAGSystem(query, client)
                 client.close()
                 
-                # رسالة النجاح المحدثة (بدون علامة تعجب)
                 st.markdown('<div class="success-message">تم الحصول على الإجابة</div>', unsafe_allow_html=True)
                 
                 st.markdown(f"""
@@ -554,7 +538,6 @@ if send:
             except Exception as e:
                 st.error(f"عذراً، حدث خطأ أثناء معالجة السؤال: {e}")
 
-# Footer
 st.markdown("""
     <div class="footer">
         <h4>AILS - مساعد الأراضي والمساحة الأردني</h4>
@@ -565,6 +548,7 @@ st.markdown("""
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
+
 
 
 
