@@ -94,7 +94,7 @@ Focus solely on land and cadastral issues in Jordan, not general legal consultat
     data = {
         "model": "sonar-pro",
         "messages": messages,
-        "max_tokens": 300,
+        "max_tokens": 500,
         "temperature": 0.5,
     }
 
@@ -565,6 +565,7 @@ st.markdown("""
         <p>نظام ذكي متخصص في الأراضي والمساحة</p>
     </div>
 """, unsafe_allow_html=True)
+
 
 
 
